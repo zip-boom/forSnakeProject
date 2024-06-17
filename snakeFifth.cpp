@@ -369,80 +369,67 @@ void moveSnake(std::deque<Position>& snake, Direction& dir, std::vector<std::vec
         map[gate1.y][gate1.x] = WALL;
         map[gate2.y][gate2.x] = WALL;
 
+        placeGate(map, gate1, gate2);
+
+        std::vector<Direction> exitDirections = {dir};  // 1) 진입 방향과 일치하는 방향
+        
         switch (dir) {
 
             case UP:
 
-                newHead.y = exitGate.y + 1;
-                newHead.x = exitGate.x;
+                exitDirections.push_back(RIGHT);  // 2) 시계 방향
+                exitDirections.push_back(LEFT);   // 3) 반시계 방향
+                exitDirections.push_back(DOWN);   // 4) 반대 방향
                 break;
 
             case DOWN:
 
-                newHead.y = exitGate.y - 1;
-                newHead.x = exitGate.x;
+                exitDirections.push_back(LEFT);
+                exitDirections.push_back(RIGHT);
+                exitDirections.push_back(UP);
                 break;
 
             case LEFT:
 
-                newHead.x = exitGate.x + 1;
-                newHead.y = exitGate.y;
+                exitDirections.push_back(UP);
+                exitDirections.push_back(DOWN);
+                exitDirections.push_back(RIGHT);
                 break;
 
             case RIGHT:
 
-                newHead.x = exitGate.x - 1;
-                newHead.y = exitGate.y;
+                exitDirections.push_back(DOWN);
+                exitDirections.push_back(UP);
+                exitDirections.push_back(LEFT);
                 break;
         }
 
-        if (exitGate.y == 0) {
+        bool exitFound = false;
+        for (Direction exitDir : exitDirections) {
+            int y = exitGate.y;
+            int x = exitGate.x;
+            switch (exitDir) {
+                case UP: y -= 1; break;
+                case DOWN: y += 1; break;
+                case LEFT: x -= 1; break;
+                case RIGHT: x += 1; break;
+            }
 
-            newHead.y = exitGate.y + 1;
-            dir = DOWN;
-
-        } else if (exitGate.y == rows - 1) {
-
-            newHead.y = exitGate.y - 1;
-            dir = UP;
-
-        } else if (exitGate.x == 0) {
-
-            newHead.x = exitGate.x + 1;
-            dir = RIGHT;
-
-        } else if (exitGate.x == cols - 1) {
-
-            newHead.x = exitGate.x - 1;
-            dir = LEFT;
-
-        } else {
-            
-            switch (dir) {
-                
-                case UP:
-
-                    newHead.y = exitGate.y + 1;
-                    break;
-
-                case DOWN:
-
-                    newHead.y = exitGate.y - 1;
-                    break;
-
-                case LEFT:
-
-                    newHead.x = exitGate.x + 1;
-                    break;
-
-                case RIGHT:
-
-                    newHead.x = exitGate.x - 1;
-                    break;
+            if (map[y][x] != WALL) {
+                newHead.y = y;
+                newHead.x = x;
+                dir = exitDir;
+                exitFound = true;
+                break;
             }
         }
 
-        placeGate(map, gate1, gate2);
+        if (!exitFound) {  // 모든 방향이 막혀있는 경우 (이론적으로 발생하지 않아야 함)
+            
+            endwin();
+            printf("Game Over!\n");
+            exit(0);
+        }
     }
 
     // 아이템 획득 시
