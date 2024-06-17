@@ -143,7 +143,7 @@ void placeItem(std::vector<std::vector<int>>& map, int itemType) {
         x = rand() % cols;
 
     } while (map[y][x] != 0);
-    
+
     map[y][x] = itemType;
 }
 
@@ -192,6 +192,9 @@ void moveSnake(std::deque<Position>& snake, Direction dir, std::vector<std::vect
         // Growth Item : 머리 추가
         snake.push_front(newHead);
 
+        // 먹은 아이템 재배치
+        placeItem(map, GROWTHITEM);
+
     } else if (map[newHead.y][newHead.x] == POISONITEM) {
 
         // Poison Item : 꼬리 제거
@@ -199,6 +202,9 @@ void moveSnake(std::deque<Position>& snake, Direction dir, std::vector<std::vect
 
             snake.push_front(newHead);
             Position tail = snake.back();
+            snake.pop_back();
+            map[tail.y][tail.x] = 0;
+            tail = snake.back();
             snake.pop_back();
             map[tail.y][tail.x] = 0;
 
@@ -210,9 +216,11 @@ void moveSnake(std::deque<Position>& snake, Direction dir, std::vector<std::vect
             exit(0);
         }
 
+        // 먹은 아이템 재배치
+        placeItem(map, POISONITEM);
+
     } else {
 
-        // 꼬리 제거
         Position tail = snake.back();
         snake.pop_back();
         map[tail.y][tail.x] = 0;
@@ -251,6 +259,8 @@ int main() {
     placeItem(map, POISONITEM);
     dispMap(map);
 
+    auto start = std::chrono::steady_clock::now();
+
     while (true) {
 
         int ch = getch();
@@ -279,7 +289,12 @@ int main() {
         }
 
         moveSnake(snake, dir, map);
+
+        clear();
         dispMap(map);
+        refresh();
+        
+        auto end = std::chrono::steady_clock::now();
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
