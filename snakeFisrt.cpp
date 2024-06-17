@@ -103,6 +103,7 @@ void dispMap(const std::vector<std::vector<int>>& map) {
     refresh();
 }
 
+
 int main() {
 
     initscr();
