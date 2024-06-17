@@ -167,14 +167,14 @@ void moveSnake(std::deque<Position>& snake, Direction dir, std::vector<std::vect
         exit(0);
     }
 
+    // 머리 추가
+    snake.push_front(newHead);
+    map[newHead.y][newHead.x] = HEAD;
+
     // 꼬리 제거
     Position tail = snake.back();
     snake.pop_back();
     map[tail.y][tail.x] = 0;
-
-    // 꼬리 추가
-    snake.push_front(newHead);
-    map[newHead.y][newHead.x] = HEAD;
 
     // 몸통 갱신
     for (size_t i = 1; i < snake.size(); ++i) {
@@ -191,6 +191,7 @@ int main() {
     noecho();
     curs_set(0);
     keypad(stdscr, TRUE);
+    nodelay(stdscr, TRUE);
 
     int rows = 21;
     int cols = 21;
