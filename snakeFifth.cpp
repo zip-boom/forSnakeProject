@@ -151,7 +151,7 @@ std::vector<std::vector<int>> stageMaps[4] = {
     },
 };
 
-// Mission 정
+// Mission 정의
 Mission stageMissions[4] = {
     {1, 5, 2, 1},
     {1, 6, 3, 2},
