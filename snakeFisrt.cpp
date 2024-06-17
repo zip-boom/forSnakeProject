@@ -1,4 +1,4 @@
-// snake.cpp
+// snakeFisrt.cpp
 #include <ncurses.h>
 #include <vector>
 
