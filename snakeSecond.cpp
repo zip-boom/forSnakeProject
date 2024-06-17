@@ -203,6 +203,8 @@ int main() {
     initSnake(snake, map);
     dispMap(map);
 
+    auto start = std::chrono::steady_clock::now();
+
     while (true) {
 
         int ch = getch();
@@ -231,7 +233,12 @@ int main() {
         }
 
         moveSnake(snake, dir, map);
+
+        clear();
         dispMap(map);
+        refresh();
+
+        auto end = std::chrono::steady_clock::now();
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
