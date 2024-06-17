@@ -218,36 +218,79 @@ void moveSnake(std::deque<Position>& snake, Direction& dir, std::vector<std::vec
     // Gate 통과 시 
     if (map[newHead.y][newHead.x] == GATE) {
 
-        if (newHead.y == gate1.y && newHead.x == gate1.x) {
-
-            newHead = gate2;
-
-        } else {
-
-            newHead = gate1;
-        }
+        Position exitGate = (newHead.y == gate1.y && newHead.x == gate1.x) ? gate2 : gate1;
 
         switch (dir) {
 
             case UP:
 
-                dir = (newHead.y == 0) ? DOWN : dir;
+                newHead.y = exitGate.y + 1;
+                newHead.x = exitGate.x;
                 break;
 
             case DOWN:
 
-                dir = (newHead.y == rows - 1) ? UP : dir;
+                newHead.y = exitGate.y - 1;
+                newHead.x = exitGate.x;
                 break;
 
             case LEFT:
 
-                dir = (newHead.x == 0) ? RIGHT : dir;
+                newHead.x = exitGate.x + 1;
+                newHead.y = exitGate.y;
                 break;
 
             case RIGHT:
 
-                dir = (newHead.x == cols - 1) ? LEFT : dir;
+                newHead.x = exitGate.x - 1;
+                newHead.y = exitGate.y;
                 break;
+        }
+
+        if (exitGate.y == 0) {
+
+            newHead.y = exitGate.y + 1;
+            dir = DOWN;
+
+        } else if (exitGate.y == rows - 1) {
+
+            newHead.y = exitGate.y - 1;
+            dir = UP;
+
+        } else if (exitGate.x == 0) {
+
+            newHead.x = exitGate.x + 1;
+            dir = RIGHT;
+
+        } else if (exitGate.x == cols - 1) {
+
+            newHead.x = exitGate.x - 1;
+            dir = LEFT;
+
+        } else {
+            
+            switch (dir) {
+                
+                case UP:
+
+                    newHead.y = exitGate.y + 1;
+                    break;
+
+                case DOWN:
+
+                    newHead.y = exitGate.y - 1;
+                    break;
+
+                case LEFT:
+
+                    newHead.x = exitGate.x + 1;
+                    break;
+
+                case RIGHT:
+
+                    newHead.x = exitGate.x - 1;
+                    break;
+            }
         }
     }
 
@@ -257,6 +300,9 @@ void moveSnake(std::deque<Position>& snake, Direction& dir, std::vector<std::vec
         // Growth Item : 머리 추가
         snake.push_front(newHead);
 
+        // 먹은 아이템 재배치
+        placeItem(map, GROWTHITEM);
+
     } else if (map[newHead.y][newHead.x] == POISONITEM) {
 
         // Poison Item : 꼬리 제거
@@ -264,6 +310,9 @@ void moveSnake(std::deque<Position>& snake, Direction& dir, std::vector<std::vec
 
             snake.push_front(newHead);
             Position tail = snake.back();
+            snake.pop_back();
+            map[tail.y][tail.x] = 0;
+            tail = snake.back();
             snake.pop_back();
             map[tail.y][tail.x] = 0;
 
@@ -275,9 +324,11 @@ void moveSnake(std::deque<Position>& snake, Direction& dir, std::vector<std::vec
             exit(0);
         }
 
+        // 먹은 아이템 재배치
+        placeItem(map, POISONITEM);
+
     } else {
 
-        // 꼬리 제거
         Position tail = snake.back();
         snake.pop_back();
         map[tail.y][tail.x] = 0;
